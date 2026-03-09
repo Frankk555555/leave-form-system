@@ -75,7 +75,7 @@ const createLeaveRequest = async (req, res) => {
       leaveTypeId,
       startDate,
       endDate,
-      totalDays: validation.totalDays,
+      totalDays: validation.countWorkingDaysOnly ? validation.workingDays : validation.totalDays,
       timeSlot: timeSlot || "full",
       reason,
       contactAddress,
@@ -310,6 +310,33 @@ const cancelLeaveRequest = async (req, res) => {
       cancelReason: req.body.reason || null,
     });
 
+    // Restore leave balance if the request was previously confirmed
+    if (oldStatus === "confirmed") {
+      try {
+        const currentYear = new Date().getFullYear();
+        const balance = await LeaveBalance.findOne({
+          where: {
+            userId: leaveRequest.userId,
+            leaveTypeId: leaveRequest.leaveTypeId,
+            year: currentYear,
+          },
+        });
+
+        if (balance) {
+          const totalDays = parseFloat(leaveRequest.totalDays);
+          await balance.update({
+            usedDays: Math.max(0, parseFloat(balance.usedDays) - totalDays),
+          });
+
+          console.log(
+            `Restored ${totalDays} days of type ${leaveRequest.leaveTypeId} to user ${leaveRequest.userId}`
+          );
+        }
+      } catch (balanceError) {
+        console.error("Error restoring leave balance:", balanceError);
+      }
+    }
+
     // Audit trail
     await LeaveHistory.create({
       leaveRequestId: leaveRequest.id,
@@ -353,15 +380,21 @@ const updateLeaveRequest = async (req, res) => {
       if (lt) leaveTypeId = lt.id;
     }
 
-    // Calculate total days
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end - start);
-    const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    const validation = await validateLeaveRequest({
+      userId: req.user.id,
+      leaveTypeId: targetTypeId,
+      startDate,
+      endDate,
+    });
+
+    if (!validation.valid) {
+      return res.status(400).json({ message: validation.message });
+    }
+
+    const calculatedTotalDays = validation.countWorkingDaysOnly ? validation.workingDays : validation.totalDays;
 
     // Check leave balance (normalized)
     const currentYear = new Date().getFullYear();
-    const targetTypeId = leaveTypeId || leaveRequest.leaveTypeId;
     const balance = await LeaveBalance.findOne({
       where: {
         userId: req.user.id,
@@ -372,7 +405,7 @@ const updateLeaveRequest = async (req, res) => {
 
     if (balance) {
       const remaining = balance.getRemainingDays();
-      if (remaining < totalDays) {
+      if (remaining < calculatedTotalDays) {
         return res.status(400).json({
           message: `วันลาคงเหลือไม่เพียงพอ เหลือ ${remaining} วัน`,
         });
@@ -383,7 +416,7 @@ const updateLeaveRequest = async (req, res) => {
       leaveTypeId: targetTypeId,
       startDate,
       endDate,
-      totalDays,
+      totalDays: calculatedTotalDays,
       reason,
     });
 

@@ -321,6 +321,14 @@ const fillSickPersonalMaternityForm = async (
   const getCurrent = (type) =>
     type === leaveData.leaveType ? leaveData.totalDays : 0;
 
+  const formatStat = (val) => {
+    if (val === undefined || val === null || Number.isNaN(Number(val)))
+      return "-";
+    const num = Number(val);
+    if (num === 0) return "-";
+    return Number.isInteger(num) ? String(num) : num.toFixed(1).replace(/\.0$/, "");
+  };
+
   // พิกัด X ของแต่ละคอลัมน์ (ลามาแล้ว, ลาครั้งนี้, รวมเป็น)
   const col1X = 150; // ลามาแล้ว
   const col2X = 200; // ลาครั้งนี้
@@ -329,10 +337,10 @@ const fillSickPersonalMaternityForm = async (
 
   // ป่วย (แถวแรก) y=500
   const row1Y = height - 510;
-  drawText(page, String(getUsed("sick") || "-"), col1X, row1Y, font, smallFont);
+  drawText(page, formatStat(getUsed("sick")), col1X, row1Y, font, smallFont);
   drawText(
     page,
-    String(getCurrent("sick") || "-"),
+    formatStat(getCurrent("sick")),
     col2X,
     row1Y,
     font,
@@ -340,7 +348,7 @@ const fillSickPersonalMaternityForm = async (
   );
   drawText(
     page,
-    String(getUsed("sick") + getCurrent("sick") || "-"),
+    formatStat(getUsed("sick") + getCurrent("sick")),
     col3X,
     row1Y,
     font,
@@ -351,7 +359,7 @@ const fillSickPersonalMaternityForm = async (
   const row2Y = row1Y - rowSpacing;
   drawText(
     page,
-    String(getUsed("personal") || "-"),
+    formatStat(getUsed("personal")),
     col1X,
     row2Y,
     font,
@@ -359,7 +367,7 @@ const fillSickPersonalMaternityForm = async (
   );
   drawText(
     page,
-    String(getCurrent("personal") || "-"),
+    formatStat(getCurrent("personal")),
     col2X,
     row2Y,
     font,
@@ -367,7 +375,7 @@ const fillSickPersonalMaternityForm = async (
   );
   drawText(
     page,
-    String(getUsed("personal") + getCurrent("personal") || "-"),
+    formatStat(getUsed("personal") + getCurrent("personal")),
     col3X,
     row2Y,
     font,
@@ -378,7 +386,7 @@ const fillSickPersonalMaternityForm = async (
   const row3Y = row2Y - rowSpacing;
   drawText(
     page,
-    String(getUsed("maternity") || "-"),
+    formatStat(getUsed("maternity")),
     col1X,
     row3Y,
     font,
@@ -386,7 +394,7 @@ const fillSickPersonalMaternityForm = async (
   );
   drawText(
     page,
-    String(getCurrent("maternity") || "-"),
+    formatStat(getCurrent("maternity")),
     col2X,
     row3Y,
     font,
@@ -394,7 +402,7 @@ const fillSickPersonalMaternityForm = async (
   );
   drawText(
     page,
-    String(getUsed("maternity") + getCurrent("maternity") || "-"),
+    formatStat(getUsed("maternity") + getCurrent("maternity")),
     col3X,
     row3Y,
     font,
@@ -521,12 +529,20 @@ const fillVacationForm = async (page, font, leaveData, userData) => {
   const col4X = 287; // คงเหลือสะสม
   const tableY = height - 408; // แถวข้อมูล (ปรับตามตำแหน่งจริง)
 
-  drawText(page, String(used || "-"), col1X, tableY, font, smallFont);
-  drawText(page, String(currentLeave || "-"), col2X, tableY, font, smallFont);
-  drawText(page, String(totalUsed || "-"), col3X, tableY, font, smallFont);
+  const formatStat = (val) => {
+    if (val === undefined || val === null || Number.isNaN(Number(val)))
+      return "-";
+    const num = Number(val);
+    if (num === 0) return "-";
+    return Number.isInteger(num) ? String(num) : num.toFixed(1).replace(/\.0$/, "");
+  };
+
+  drawText(page, formatStat(used), col1X, tableY, font, smallFont);
+  drawText(page, formatStat(currentLeave), col2X, tableY, font, smallFont);
+  drawText(page, formatStat(totalUsed), col3X, tableY, font, smallFont);
   drawText(
     page,
-    String(remaining >= 0 ? remaining : 0),
+    formatStat(remaining >= 0 ? remaining : 0),
     col4X,
     tableY,
     font,
@@ -626,9 +642,17 @@ const fillPaternityForm = async (page, font, leaveData, userData) => {
   const col3X = 263; // รวมเป็น
   const tableY = height - 522; // แถวข้อมูล (ปรับตามตำแหน่งจริง)
 
-  drawText(page, String(used || "-"), col1X, tableY, font, smallFont);
-  drawText(page, String(currentLeave || "-"), col2X, tableY, font, smallFont);
-  drawText(page, String(totalUsed || "-"), col3X, tableY, font, smallFont);
+  const formatStat = (val) => {
+    if (val === undefined || val === null || Number.isNaN(Number(val)))
+      return "-";
+    const num = Number(val);
+    if (num === 0) return "-";
+    return Number.isInteger(num) ? String(num) : num.toFixed(1).replace(/\.0$/, "");
+  };
+
+  drawText(page, formatStat(used), col1X, tableY, font, smallFont);
+  drawText(page, formatStat(currentLeave), col2X, tableY, font, smallFont);
+  drawText(page, formatStat(totalUsed), col3X, tableY, font, smallFont);
 };
 
 /**

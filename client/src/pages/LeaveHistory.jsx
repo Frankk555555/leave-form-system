@@ -15,6 +15,7 @@ import {
   FaPaperclip,
   FaFilePdf,
   FaEye,
+  FaTimesCircle,
 } from "react-icons/fa";
 
 const LeaveHistory = () => {
@@ -89,7 +90,7 @@ const LeaveHistory = () => {
     });
 
     const leaveData = {
-      leaveType: request.leaveType,
+      leaveType: getLeaveTypeCode(request.leaveType),
       startDate: request.startDate,
       endDate: request.endDate,
       reason: request.reason,
@@ -107,6 +108,19 @@ const LeaveHistory = () => {
       console.error("Error fetching leave requests:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancel = async (request) => {
+    const isConfirm = await toast.confirm("คุณต้องการยกเลิกใบลานี้ใช่หรือไม่?");
+    if (!isConfirm) return;
+
+    try {
+      await leaveRequestsAPI.cancel(request.id || request._id);
+      toast.success("ยกเลิกใบลาเรียบร้อยแล้ว");
+      fetchRequests(); // Refresh list to update status
+    } catch (error) {
+      toast.error(error.response?.data?.message || "เกิดข้อผิดพลาดในการยกเลิก");
     }
   };
 
@@ -246,6 +260,26 @@ const LeaveHistory = () => {
                       ยื่นเมื่อ {formatDate(request.createdAt)}
                     </span>
                     <div className="footer-buttons">
+                      {request.status !== "cancelled" && (
+                        <button
+                          className="cancel-btn-leave"
+                          onClick={() => handleCancel(request)}
+                          title="ยกเลิกใบลา"
+                          style={{
+                            background: "#ef4444",
+                            color: "white",
+                            padding: "6px 12px",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <FaTimesCircle /> ยกเลิก
+                        </button>
+                      )}
                       <button
                         className="preview-btn-form"
                         onClick={() => handlePreviewPDF(request)}

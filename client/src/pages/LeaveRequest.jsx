@@ -109,10 +109,16 @@ const LeaveRequest = () => {
     return diff;
   };
 
-  const getLeaveBalance = () => {
-    const type = formData.leaveType;
-    if (type === "military") return "ไม่จำกัด";
-    return user?.leaveBalance?.[type] || 0;
+  const getRemainingBalance = (code) => {
+    if (code === "military") return "ไม่จำกัด";
+    if (!user?.leaveBalances || !Array.isArray(user.leaveBalances)) return 0;
+    const balance = user.leaveBalances.find((b) => b.leaveType?.code === code);
+    if (!balance) return 0;
+    return (
+      parseFloat(balance.totalDays || 0) +
+      parseFloat(balance.carriedOverDays || 0) -
+      parseFloat(balance.usedDays || 0)
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -303,7 +309,7 @@ const LeaveRequest = () => {
                       {type.days === "ไม่จำกัด"
                         ? "ไม่จำกัด"
                         : `เหลือ ${
-                            user?.leaveBalance?.[type.value] || type.days
+                            getRemainingBalance(type.value) || type.days
                           } วัน`}
                     </span>
                   </label>
