@@ -96,6 +96,7 @@ const LeaveHistory = () => {
       reason: request.reason,
       totalDays: request.totalDays,
       leaveStats: leaveStats,
+      createdAt: request.createdAt,
     };
     await previewLeavePDF(leaveData, user);
   };

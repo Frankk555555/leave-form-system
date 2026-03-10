@@ -194,7 +194,8 @@ const fillSickPersonalMaternityForm = async (
   const { height } = page.getSize();
   const startDate = formatThaiDate(leaveData.startDate);
   const endDate = formatThaiDate(leaveData.endDate);
-  const today = formatThaiDate(new Date().toISOString());
+  const requestDate = leaveData.createdAt ? new Date(leaveData.createdAt).toISOString() : new Date().toISOString();
+  const today = formatThaiDate(requestDate);
 
   const departmentName = getDepartmentName(userData.department);
   const facultyName = getFacultyName(userData.department);
@@ -417,7 +418,8 @@ const fillVacationForm = async (page, font, leaveData, userData) => {
   const { height } = page.getSize();
   const startDate = formatThaiDate(leaveData.startDate);
   const endDate = formatThaiDate(leaveData.endDate);
-  const today = formatThaiDate(new Date().toISOString());
+  const requestDate = leaveData.createdAt ? new Date(leaveData.createdAt).toISOString() : new Date().toISOString();
+  const today = formatThaiDate(requestDate);
 
   const departmentName = getDepartmentName(userData.department);
   const facultyName = getFacultyName(userData.department);
@@ -558,7 +560,8 @@ const fillPaternityForm = async (page, font, leaveData, userData) => {
   const { height } = page.getSize();
   const startDate = formatThaiDate(leaveData.startDate);
   const endDate = formatThaiDate(leaveData.endDate);
-  const today = formatThaiDate(new Date().toISOString());
+  const requestDate = leaveData.createdAt ? new Date(leaveData.createdAt).toISOString() : new Date().toISOString();
+  const today = formatThaiDate(requestDate);
 
   const departmentName = getDepartmentName(userData.department);
   const facultyName = getFacultyName(userData.department);

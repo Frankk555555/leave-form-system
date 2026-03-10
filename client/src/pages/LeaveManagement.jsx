@@ -134,6 +134,7 @@ const LeaveManagement = () => {
       contactAddress: request.contactAddress || "",
       contactPhone: request.contactPhone || "",
       leaveStats: leaveStats,
+      createdAt: request.createdAt,
     };
 
     // Prepare user data
