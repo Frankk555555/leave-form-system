@@ -276,7 +276,7 @@ const fillSickPersonalMaternityForm = async (
     drawCheckmark(335, height - 275);
   }
   if (leaveData.leaveType === "maternity") {
-    drawCheckmark(427, height - 275);
+    drawCheckmark(423, height - 275);
   }
 
   // เนื่องจาก (เหตุผล) x=155, y=292
@@ -306,10 +306,16 @@ const fillSickPersonalMaternityForm = async (
     fontSize,
   );
 
+  const contactInfoArr = [];
+  if (leaveData.contactAddress) contactInfoArr.push(leaveData.contactAddress);
+  if (leaveData.contactPhone) contactInfoArr.push(`โทร. ${leaveData.contactPhone}`);
+  else if (userData.phone) contactInfoArr.push(`โทร. ${userData.phone}`);
+  const contactInfoStr = contactInfoArr.join(" ");
+
   // ในระหว่างลาจะติดต่อข้าพเจ้าได้ที่ (เบอร์โทรศัพท์) x=80, y=364
   drawText(
     page,
-    leaveData.contactPhone || userData.phone || "",
+    contactInfoStr,
     80,
     height - 367,
     font,
@@ -506,10 +512,16 @@ const fillVacationForm = async (page, font, leaveData, userData) => {
   // รวมเป็น (สะสม + ประจำปี)
   drawText(page, String(totalAvailable), 480, height - 232, font, fontSize);
 
+  const contactInfoArr = [];
+  if (leaveData.contactAddress) contactInfoArr.push(leaveData.contactAddress);
+  if (leaveData.contactPhone) contactInfoArr.push(`โทร. ${leaveData.contactPhone}`);
+  else if (userData.phone) contactInfoArr.push(`โทร. ${userData.phone}`);
+  const contactInfoStr = contactInfoArr.join(" ");
+
   // ในระหว่างลา จะติดต่อข้าพเจ้าได้ที่ (เบอร์โทรศัพท์)
   drawText(
     page,
-    leaveData.contactPhone || userData.phone || "",
+    contactInfoStr,
     250,
     height - 267,
     font,
@@ -618,18 +630,21 @@ const fillPaternityForm = async (page, font, leaveData, userData) => {
   drawText(page, endDate.month, 280, height - 342, font, fontSize);
   drawText(page, String(endDate.year), 340, height - 342, font, fontSize);
 
-  // มีกำหนด ... วัน
-  drawText(
-    page,
-    String(leaveData.totalDays),
-    426,
-    height - 342,
-    font,
-    fontSize,
-  );
+  const contactInfoArr = [];
+  if (leaveData.contactAddress) contactInfoArr.push(leaveData.contactAddress);
+  if (leaveData.contactPhone) contactInfoArr.push(`โทร. ${leaveData.contactPhone}`);
+  else if (userData.phone) contactInfoArr.push(`โทร. ${userData.phone}`);
+  const contactInfoStr = contactInfoArr.join(" ");
 
   // ในระหว่างลาจะติดต่อข้าพเจ้าได้ที่ (เบอร์โทรศัพท์)
-  drawText(page, userData.phone || "", 240, height - 359, font, fontSize);
+  drawText(
+    page,
+    contactInfoStr,
+    240,
+    height - 359,
+    font,
+    fontSize
+  );
 
   // === สถิติการลา (ในตาราง) ===
   // คอลัมน์: ลามาแล้ว, ลาครั้งนี้, รวมเป็น

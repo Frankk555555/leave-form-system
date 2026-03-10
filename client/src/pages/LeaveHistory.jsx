@@ -60,7 +60,10 @@ const LeaveHistory = () => {
       endDate: request.endDate,
       reason: request.reason,
       totalDays: request.totalDays,
+      contactAddress: request.contactAddress || "",
+      contactPhone: request.contactPhone || "",
       leaveStats: leaveStats,
+      createdAt: request.createdAt,
     };
     await generateLeavePDF(leaveData, user);
   };
@@ -95,6 +98,8 @@ const LeaveHistory = () => {
       endDate: request.endDate,
       reason: request.reason,
       totalDays: request.totalDays,
+      contactAddress: request.contactAddress || "",
+      contactPhone: request.contactPhone || "",
       leaveStats: leaveStats,
       createdAt: request.createdAt,
     };
