@@ -434,6 +434,73 @@
   margin-bottom: 0.3rem;
 }
 
+/* Download Template Button */
+.download-template-btn {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.download-template-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Import Spinner */
+.import-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Success List */
+.success-list {
+  background: #f0fff4;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.success-list ul {
+  margin: 0.5rem 0 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+}
+
+.success-item {
+  display: flex;
+  align-items: center;
+  color: #276749;
+  margin-bottom: 0.3rem;
+}
+
+/* Disabled import submit btn */
+.submit-btn-import-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+
 /* ==========================================
    RESPONSIVE STYLES
    ========================================== */

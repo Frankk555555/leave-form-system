@@ -351,6 +351,46 @@ const UserManagement = () => {
     setImportResults(null);
   };
 
+  // Download CSV template สำหรับนำเข้าข้อมูลบุคลากร
+  const downloadTemplate = () => {
+    const headers = [
+      "employeeId",
+      "firstName",
+      "lastName",
+      "email",
+      "password",
+      "position",
+      "role",
+      "departmentId",
+      "supervisorId",
+    ];
+    const exampleRow = [
+      "EMP001",
+      "นายสมชาย",
+      "ใจดี",
+      "somchai@example.com",
+      "Password1",
+      "อาจารย์",
+      "employee",
+      "",
+      "",
+    ];
+    const csvContent = [
+      headers.join(","),
+      exampleRow.join(","),
+    ].join("\n");
+    const bom = "\uFEFF"; // UTF-8 BOM เพื่อให้ Excel เปิดภาษาไทยได้
+    const blob = new Blob([bom + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ตัวอย่างนำเข้าบุคลากร.csv";
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   if (loading) {
     return (
       <>
@@ -804,7 +844,7 @@ const UserManagement = () => {
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
                     minLength={6}
-                    placeholder="กรอกรหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)"
+                    placeholder="กรอกรหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)"
                   />
                 </div>
                 <div className="modal-actions">
@@ -832,7 +872,7 @@ const UserManagement = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <h3>
-                <FaFileImport style={{ marginRight: "8px" }} />{" "}
+                <FaFileImport style={{ marginRight: "8px" }} />
                 นำเข้าข้อมูลบุคลากร
               </h3>
 
@@ -841,15 +881,34 @@ const UserManagement = () => {
                   <div className="import-info">
                     <p>อัปโหลดไฟล์ CSV หรือ Excel (.xlsx) ที่มีข้อมูลบุคลากร</p>
                     <div className="template-info">
-                      <strong>คอลัมน์ที่ต้องมี:</strong>
-                      <code>
-                        employeeId, firstName, lastName, email, password,
-                        position
-                      </code>
-                      <br />
-                      <strong>คอลัมน์เพิ่มเติม (ไม่บังคับ):</strong>
-                      <code>role, departmentId, supervisorId</code>
+                      <div style={{ marginBottom: "6px" }}>
+                        <strong>คอลัมน์บังคับ (Required):</strong>
+                        <br />
+                        <code>employeeId, firstName, lastName, email, password, position</code>
+                        <br />
+                        <small style={{ color: "#e53e3e" }}>
+                          * password ต้องมีอย่างน้อย 8 ตัว มีตัวพิมพ์เล็ก ตัวพิมพ์ใหญ่ และตัวเลข
+                        </small>
+                      </div>
+                      <div>
+                        <strong>คอลัมน์ไม่บังคับ (Optional):</strong>
+                        <br />
+                        <code>role</code>
+                        <small> (employee / head / admin, ตั้งค่าเป็น employee ถ้าเว้นว่าง)</small>
+                        <br />
+                        <code>departmentId, supervisorId</code>
+                        <small> (ID ตัวเลขจากระบบ ถ้าไม่ทราบให้เว้นว่างไว้)</small>
+                      </div>
                     </div>
+
+                    <button
+                      type="button"
+                      className="download-template-btn"
+                      onClick={downloadTemplate}
+                    >
+                      <FaDownload style={{ marginRight: "6px" }} />
+                      ดาวน์โหลดไฟล์ตัวอย่าง (.csv)
+                    </button>
                   </div>
 
                   <div className="form-group">
@@ -874,9 +933,19 @@ const UserManagement = () => {
                     <button
                       type="submit"
                       className="submit-btn-import-submit"
-                      disabled={importing}
+                      disabled={importing || !importFile}
                     >
-                      {importing ? "กำลังนำเข้า..." : "นำเข้าข้อมูล"}
+                      {importing ? (
+                        <>
+                          <span className="import-spinner" />
+                          กำลังนำเข้า...
+                        </>
+                      ) : (
+                        <>
+                          <FaFileImport style={{ marginRight: "6px" }} />
+                          นำเข้าข้อมูล
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>
@@ -893,6 +962,20 @@ const UserManagement = () => {
                     </div>
                   </div>
 
+                  {importResults.success.length > 0 && (
+                    <div className="success-list">
+                      <strong>รายการที่นำเข้าสำเร็จ:</strong>
+                      <ul>
+                        {importResults.success.map((item, index) => (
+                          <li key={index} className="success-item">
+                            <FaCheckCircle style={{ color: "#38a169", marginRight: "6px" }} />
+                            {item.name} ({item.employeeId})
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   {importResults.failed.length > 0 && (
                     <div className="failed-list">
                       <strong>รายการที่ล้มเหลว:</strong>
@@ -907,6 +990,15 @@ const UserManagement = () => {
                   )}
 
                   <div className="modal-actions">
+                    <button
+                      className="cancel-btn"
+                      onClick={() => {
+                        setImportResults(null);
+                        setImportFile(null);
+                      }}
+                    >
+                      นำเข้าเพิ่มเติม
+                    </button>
                     <button className="submit-btn" onClick={closeImportModal}>
                       ปิด
                     </button>
